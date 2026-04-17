@@ -1,16 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JHOP EXPRESS</title>
     <style>
-        * { margin: 0; padding: 0; }
-        html, body { height: 100%; width: 100%; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background: #000;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        #filtro {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4em;
+            font-family: Arial, sans-serif;
+            z-index: 9999;
+            trans<div id="filtro">
+    www.JHOPEXPRESS.com
+</div>
+
+<iframe src="https://plataforma-web-jhop-xpres.onrender.com"></iframe>
+
+<script>
+    setTimeout(() => {
+        document.getElementById('filtro').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('filtro').style.display = 'none';
+        }, 800);
+    }, 2000);
+</script>
+
+</body>
+</html>
+ition: opacity 0.8s ease;
+        }
     </style>
 </head>
 <body>
+<div id="filtro">
+    www.JHOPEXPRESS.com
+</div>
 
 <iframe src="https://plataforma-web-jhop-xpres.onrender.com"></iframe>
+
+<script>
+    setTimeout(() => {
+        document.getElementById('filtro').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('filtro').style.display = 'none';
+        }, 800);
+    }, 2000);
+</script>
 
 </body>
 </html>
