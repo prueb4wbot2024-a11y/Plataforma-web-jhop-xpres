@@ -3,289 +3,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YAP EXPRESS - Trabajos Rápidos</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        neon: '#00f3ff',
-                        neon2: '#ff00c8',
-                        dark: '#0a0a16',
-                    },
-                    fontFamily: {
-                        cyber: ['Orbitron', 'monospace'],
-                    }
-                }
-            }
+    <title>JHOP EXPRESS - Plataforma de Trabajos</title>
+    <style>
+        /* Aquí va todo tu estilo bonito que ya tenías */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
-    </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .glow { box-shadow: 0 0 10px theme('colors.neon'), 0 0 20px theme('colors.neon'); }
-            .glow2 { box-shadow: 0 0 10px theme('colors.neon2'), 0 0 20px theme('colors.neon2'); }
-            .text-glow { text-shadow: 0 0 5px currentColor; }
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            min-height: 100vh;
         }
+        header {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #00f2fe;
+        }
+        h1 {
+            color: #00f2fe;
+            font-size: 2.5em;
+        }
+        /* ... Puedes agregar más estilo si quieres, pero esto es la base ... */
     </style>
-</head>
-<body class="bg-dark text-white font-cyber min-h-screen flex flex-col">
 
-    <!-- NAVBAR -->
-    <nav class="border-b border-neon/30 bg-black/70 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-2xl md:text-4xl font-black text-neon text-glow">YAP EXPRESS</h1>
-            <div class="flex gap-3 items-center">
-                <span id="userLevel" class="px-3 py-1 border border-gray-500 rounded text-sm">GRATIS</span>
-                <button onclick="logout()" class="text-xs border border-red-500 px-2 py-1 hover:bg-red-500/20">SALIR</button>
-            </div>
-        </div>
-    </nav>
-    <!-- PANTALLA DE LOGIN / REGISTRO -->
-    <div id="authScreen" class="flex-1 flex items-center justify-center p-4">
-        <div class="w-full max-w-md border border-neon/50 rounded-lg p-6 bg-black/80 glow">
-            <h2 class="text-3xl text-center mb-6 text-neon">ACCESO SISTEMA</h2>
-            
-            <div class="flex gap-2 mb-6">
-                <button onclick="selectType('empleado')" id="btnEmpleado" class="flex-1 py-2 border border-gray-600 rounded">👨‍💻 TRABAJADOR</button>
-                <button onclick="selectType('empleador')" id="btnEmpleador" class="flex-1 py-2 border border-gray-600 rounded">👔 EMPLEADOR</button>
-            </div>
-
-            <input type="text" id="username" placeholder="Usuario" class="w-full mb-3 p-3 bg-gray-900 border border-gray-700 rounded focus:border-neon outline-none">
-            <input type="email" id="email" placeholder="Correo Electrónico" class="w-full mb-3 p-3 bg-gray-900 border border-gray-700 rounded focus:border-neon outline-none">
-            <input type="password" id="password" placeholder="Contraseña" class="w-full mb-6 p-3 bg-gray-900 border border-gray-700 rounded focus:border-neon outline-none">
-
-            <button onclick="login()" class="w-full py-4 bg-neon text-dark font-bold text-xl rounded hover:bg-white transition-all glow">INGRESAR</button>
-            
-            <div class="mt-6 text-center">
-                <p class="text-gray-400 text-sm">METODOS DE PAGO:</p>
-                <p class="text-xs mt-1">💳 Dólares: Tarjeta PANA</p>
-                <p class="text-xs">🇲🇽 Pesos: Mercado Pago</p>
-            </div>
-        </div>
-    </div>
-    <!-- PANTALLA PRINCIPAL -->
-    <div id="mainScreen" class="hidden flex-1 flex">
-        
-        <!-- SIDEBAR FILTROS -->
-        <div id="filterPanel" class="w-64 border-r border-neon/30 bg-black/50 p-4 hidden md:block">
-            <h3 class="text-neon mb-4">FILTROS</h3>
-            <select id="categoria" class="w-full bg-gray-900 border border-gray-700 p-2 rounded mb-2">
-                <option value="todos">Todas las categorías</option>
-                <option value="programacion">Programación</option>
-                <option value="diseno">Diseño</option>
-                <option value="ia">Inteligencia Artificial</option>
-                <option value="soporte">Soporte Técnico</option>
-            </select>
-            <input type="text" id="search" placeholder="Buscar..." class="w-full bg-gray-900 border border-gray-700 p-2 rounded">
-            <button onclick="aplicarFiltros()" class="w-full mt-3 py-2 bg-neon/20 border border-neon rounded text-sm">BUSCAR</button>
-        </div>
-
-        <!-- CONTENIDO PRINCIPAL -->
-        <div class="flex-1 p-4 overflow-y-auto">
-            
-            <!-- UPGRADE BANNER -->
-            <div id="upgradeBanner" class="mb-6 p-4 border-2 border-yellow-500 rounded-lg bg-yellow-500/10 text-center">
-                <h4 class="text-yellow-400 text-xl font-bold">¡MEJORA TU PLAN!</h4>
-                <p class="text-sm">Gratis: 2 trabajos | Pro: 10 trabajos | Pro Max: ILIMITADO + CHAT</p>
-                <div class="mt-3 flex gap-2 justify-center">
-                    <button onclick="pagarPro()" class="px-4 py-2 bg-blue-600 rounded text-sm">PRO ($5)</button>
-                    <button onclick="pagarPromax()" class="px-4 py-2 bg-yellow-600 rounded glow2">PRO MAX ($10)</button>
-                </div>
-            </div>
-
-            <!-- LISTADO DE TRABAJOS -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="jobsContainer">
-                <!-- Los trabajos se cargan aquí con JS -->
-            </div>
-
-        </div>
-        <!-- PANEL LATERAL DERECHA - CHAT -->
-        <div id="chatPanel" class="w-80 border-l border-neon/30 bg-black/50 p-4 hidden">
-            <h3 class="text-neon2 mb-4">💬 CHAT DIRECTO</h3>
-            <div id="chatMessages" class="h-[70vh] bg-gray-900/50 rounded p-3 mb-3 overflow-y-auto border border-gray-800">
-                <p class="text-gray-500 text-sm text-center">Selecciona un trabajo para chatear</p>
-            </div>
-            <div class="flex gap-2">
-                <input type="text" id="chatInput" placeholder="Escribe mensaje..." class="flex-1 bg-gray-900 border border-gray-700 p-2 rounded">
-                <button onclick="enviarMensaje()" class="px-3 bg-neon text-dark rounded">ENVIAR</button>
-            </div>
-        </div>
-
-    </div>
+    <!-- 🎭 MAGIA DEL DISFRAZ -->
     <script>
-        // ESTADO DEL SISTEMA
-        let userType = null;
-        let userLevel = 0; // 0=Gratis, 1=Pro, 2=ProMax
-        const NIVELES = ['GRATIS', 'PRO', 'PRO MAX'];
-        const LIMITES = [2, 10, 9999];
+        // Esto cambia lo que se ve en la barra de direcciones
+        history.pushState(null, null, 'www.jhopexpress.com');
+        
+        // Si intentan regresar, se mantiene el disfraz
+        window.addEventListener('popstate', () => {
+            history.pushState(null, null, 'www.jhopexpress.com');
+        });
+    </script>
+</head>
+<body>
 
-        // BASE DE DATOS DE EJEMPLO
-        const JOBS_DB = [
-            { id: 1, titulo: "Programación Web Completa", categoria: "programacion", precio: "$500", descripcion: "Necesito sitio web tipo red social con panel admin.", tipo: "real" },
-            { id: 2, titulo: "Experto en Inteligencia Artificial", categoria: "ia", precio: "$1200", descripcion: "Busco quien desarrolle modelo de predicción de datos.", tipo: "real" },
-            { id: 3, titulo: "Diseño de Logos y Marca", categoria: "diseno", precio: "$200", descripcion: "Identidad visual para nueva empresa de tecnología.", tipo: "real" },
-            { id: 4, titulo: "Soporte Técnico y Redes", categoria: "soporte", precio: "$150/hr", descripcion: "Mantenimiento preventivo y correctivo de equipos.", tipo: "real" },
-            { id: 5, titulo: "App Movil Flutter", categoria: "programacion", precio: "$800", descripcion: "Aplicación de servicios con geolocalización.", tipo: "real" },
-            { id: 6, titulo: "Automatización de Procesos", categoria: "programacion", precio: "$350", descripcion: "Scripts para automatizar tareas repetitivas.", tipo: "real" },
-            { id: 7, titulo: "Edición de Video Profesional", categoria: "diseno", precio: "$300", descripcion: "Edición y efectos para contenido redes sociales.", tipo: "real" },
-            { id: 8, titulo: "Consultor SEO y Marketing", categoria: "otros", precio: "$400", descripcion: "Posicionamiento web y campañas publicitarias.", tipo: "real" },
-            { id: 9, titulo: "Desarrollo Base de Datos", categoria: "programacion", precio: "$450", descripcion: "Diseño y optimización de bases de datos SQL/NoSQL.", tipo: "real" },
-            { id: 10, titulo: "Creación de Bots y Automatización", categoria: "ia", precio: "$600", descripcion: "Bots para WhatsApp, Telegram o Discord.", tipo: "real" }
-        ];
+    <header>
+        <h1>🚀 JHOP EXPRESS 🚀</h1>
+        <p>La plataforma de empleos más rápida y segura</p>
+    </header>
 
-        // FUNCIÓN DE SELECCIÓN DE TIPO DE USUARIO
-        function selectType(type) {
-            userType = type;
-            document.getElementById('btnEmpleado').classList.remove('border-neon', 'bg-neon/20');
-            document.getElementById('btnEmpleador').classList.remove('border-neon', 'bg-neon/20');
-            if(type === 'empleado') {
-                document.getElementById('btnEmpleado').classList.add('border-neon', 'bg-neon/20');
-            } else {
-                document.getElementById('btnEmpleador').classList.add('border-neon', 'bg-neon/20');
-            }
+    <main style="padding: 20px; max-width: 800px; margin: auto;">
+        <!-- Aquí van tus formularios -->
+        <div id="app">
+            <!-- El contenido se carga con JS -->
+        </div>
+    </main>
+    <script>
+        // 🚀 SISTEMA PRINCIPAL JHOP EXPRESS
+        let currentUser = null;
+
+        // 📋 MOSTRAR FORMULARIO DE REGISTRO
+        function showRegister(){
+            document.getElementById('app').innerHTML = `
+                <h2>📝 Registro de Usuario</h2>
+                <input type="text" id="regUser" placeholder="Nombre de usuario" required>
+                <input type="email" id="regEmail" placeholder="Correo electrónico" required>
+                <input type="password" id="regPass" placeholder="Contraseña" required>
+                <select id="regType">
+                    <option value="empleado">👷 Soy Empleado</option>
+                    <option value="empleador">💼 Soy Empleador</option>
+                </select>
+                <button onclick="register()">✅ Crear Cuenta</button>
+                <p>¿Ya tienes cuenta? <a href="#" onclick="showLogin()">Inicia Sesión</a></p>
+            `;
         }
 
-        // FUNCIÓN DE LOGIN
-        function login() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            if(user && pass && userType) {
-                document.getElementById('authScreen').classList.add('hidden');
-                document.getElementById('mainScreen').classList.remove('hidden');
-                cargarTrabajos();
-                actualizarPermisos();
-            } else {
-                alert('Completa todos los datos y selecciona tu tipo');
-            }
+        // 🔑 MOSTRAR FORMULARIO DE LOGIN
+        function showLogin(){
+            document.getElementById('app').innerHTML = `
+                <h2>🔐 Iniciar Sesión</h2>
+                <input type="email" id="loginEmail" placeholder="Tu correo" required>
+                <input type="password" id="loginPass" placeholder="Tu contraseña" required>
+                <button onclick="login()">🚀 Entrar</button>
+                <p>¿No tienes cuenta? <a href="#" onclick="showRegister()">Regístrate aquí</a></p>
+            `;
         }
 
-        // ACTUALIZA LA INTERFAZ SEGÚN NIVEL
-        function actualizarPermisos() {
-            document.getElementById('userLevel').textContent = NIVELES[userLevel];
-            
-            // Filtros visibles solo para Pro y Pro Max
-            if(userLevel >= 1) {
-                 document.getElementById('filterPanel').classList.remove('hidden');
-            } else {
-                document.getElementById('filterPanel').classList.add('hidden');
-            }
+        // 📥 FUNCIÓN DE REGISTRO (SE CONECTA AL SERVIDOR)
+        async function register(){
+            const data = {
+                username: document.getElementById('regUser').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPass').value,
+                type: document.getElementById('regType').value
+            };
 
-            // Chat solo para Pro Max
-            if(userLevel >= 2) {
-                document.getElementById('chatPanel').classList.remove('hidden');
-            } else {
-                document.getElementById('chatPanel').classList.add('hidden');
-            }
-        }
-
-        // CARGA DE TRABAJOS CON LÍMITE
-        function cargarTrabajos() {
-            const container = document.getElementById('jobsContainer');
-            container.innerHTML = "";
-            let limite = LIMITES[userLevel];
-            let trabajosAMostrar = JOBS_DB.slice(0, limite);
-
-            trabajosAMostrar.forEach(job => {
-                const card = document.createElement('div');
-                card.className = "border border-gray-700 rounded-lg p-4 bg-black/50 hover:border-neon transition-all";
-                card.innerHTML = `
-                    <h4 class="text-lg font-bold text-neon mb-1">${job.titulo}</h4>
-                    <span class="text-xs bg-gray-800 px-2 py-1 rounded">${job.categoria}</span>
-                    <p class="text-sm my-2 text-gray-300">${job.descripcion}</p>
-                    <div class="flex justify-between items-center mt-3">
-                        <span class="text-green-400 font-bold">${job.precio}</span>
-                        ${userLevel >= 2 ? `<button onclick="abrirChat(${job.id})" class="text-xs bg-neon/20 border border-neon px-2 py-1 rounded">💬 CHAT</button>` : `<button onclick="verContacto()" class="text-xs bg-gray-700 px-2 py-1 rounded">VER MÁS</button>`}
-                    </div>
-                `;
-                container.appendChild(card);
+            const res = await fetch('/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
             });
-        }
 
-        // FILTROS
-        function aplicarFiltros() {
-            alert('Filtros aplicados según tu búsqueda');
-            cargarTrabajos();
-        }
-
-        // FUNCIONES DE PAGO CON DATOS EXACTOS
-        function pagarPro() {
-            const mensaje = `
-REALIZA PAGO DE $5 USD O EQUIVALENTE:
-
-💳 TARJETA PANA:
-4549 2406 4788 3943
-Vence: 02/30
-A nombre de: Victor Hugo Gonzalez Torres
-
-🇲🇽 O DEPÓSITO EN PESOS:
-CLABE: 722969017167745283
-Banco: Mercado Pago W
-Beneficiario: Victor Hugo Gonzalez Torres
-
-✅ El sistema se activará automáticamente.
-            `;
-            alert(mensaje);
-            userLevel = 1;
-            actualizarPermisos();
-            cargarTrabajos();
-            alert("🎉 CUENTA PRO ACTIVADA!");
-        }
-
-        function pagarPromax() {
-            const mensaje = `
-REALIZA PAGO DE $10 USD O EQUIVALENTE:
-
-💳 TARJETA PANA:
-4549 2406 4788 3943
-Vence: 02/30
-A nombre de: Victor Hugo Gonzalez Torres
-
-🇲🇽 O DEPÓSITO EN PESOS:
-CLABE: 722969017167745283
-Banco: Mercado Pago W
-Beneficiario: Victor Hugo Gonzalez Torres
-
-✅ ACCESO ILIMITADO Y SIN ANUNCIOS ACTIVADO.
-            `;
-            alert(mensaje);
-            userLevel = 2;
-            actualizarPermisos();
-            cargarTrabajos();
-            alert("🚀 CUENTA PRO MAX ACTIVADA!");
-        }
-
-        // CHAT
-        function abrirChat(id) {
-            document.getElementById('chatMessages').innerHTML = `<p class="text-center text-neon">Conectando con empleador del trabajo #${id}...</p>`;
-        }
-
-        function enviarMensaje() {
-            const input = document.getElementById('chatInput');
-            if(input.value) {
-                const msg = document.createElement('p');
-                msg.className = "bg-neon/20 p-2 rounded my-1 text-right";
-                msg.textContent = input.value;
-                document.getElementById('chatMessages').appendChild(msg);
-                input.value = "";
+            const result = await res.json();
+            if(result.success){
+                alert("✅ ¡Cuenta creada exitosamente!");
+                currentUser = result.user;
+                showDashboard();
+            } else {
+                alert("❌ Error: " + result.msg);
             }
         }
 
-        function verContacto() {
-            alert("Mejora a PRO MAX para ver el contacto directo y chatear.");
+        // 📤 FUNCIÓN DE LOGIN
+        async function login(){
+            const data = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPass').value
+            };
+
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+            if(result.success){
+                currentUser = result.user;
+                alert(`👋 Bienvenido ${currentUser.name}!`);
+                showDashboard();
+            } else {
+                alert("❌ Datos incorrectos");
+            }
+        }
+    </script>
+        // ==================================
+        // 🖥️ PANEL PRINCIPAL (DASHBOARD)
+        // ==================================
+        function showDashboard(){
+            document.getElementById('app').innerHTML = `
+                <div class="dashboard">
+                    <h2>👋 Hola, <span style="color:#00f2fe">${currentUser.name}</span>!</h2>
+                    <p>Estado: ${getLevelText(currentUser.level)}</p>
+                    
+                    <nav>
+                        <button onclick="showJobs()">📋 Ver Trabajos</button>
+                        <button onclick="showPublish()">➕ Publicar</button>
+                        <button onclick="showUpgrade()">💎 Mejorar Cuenta</button>
+                        <button onclick="logout()">🚪 Salir</button>
+                    </nav>
+
+                    <div id="content">
+                        <h3>¡Bienvenido a JHOP EXPRESS!</h3>
+                        <p>La plataforma más rápida y segura.</p>
+                    </div>
+                </div>
+            `;
+            loadJobs(); // Carga los trabajos apenas entra
         }
 
-        function logout() {
-            location.reload();
+        // Convertir número a texto (0=Gratis, etc)
+        function getLevelText(lvl){
+            if(lvl === 0) return "🆓 Usuario Gratis";
+            if(lvl === 1) return "💎 Usuario Pro";
+            if(lvl === 2) return "👑 Usuario ProMax";
+            return "Usuario";
         }
 
-        // INICIO
-        window.onload = () => {
-            cargarTrabajos();
+        // ==================================
+        // 📋 SISTEMA DE TRABAJOS
+        // ==================================
+
+        // MOSTRAR FORMULARIO PARA PUBLICAR
+        function showPublish(){
+            document.getElementById('content').innerHTML = `
+                <h3>➕ Publicar Nuevo Trabajo</h3>
+                <input type="text" id="jobTitle" placeholder="Título del trabajo" required>
+                <textarea id="jobDesc" placeholder="Descripción detallada" required></textarea>
+                <input type="number" id="jobPrice" placeholder="Presupuesto ($)" required>
+                <select id="jobCat">
+                    <option value="programacion">💻 Programación</option>
+                    <option value="diseno">🎨 Diseño</option>
+                    <option value="construccion">🏗️ Construcción</option>
+                    <option value="otro">📦 Otros</option>
+                </select>
+                <button onclick="publishJob()">✅ Publicar Ahora</button>
+            `;
         }
+
+        // ENVIAR TRABAJO AL SERVIDOR
+        async function publishJob(){
+            const jobData = {
+                title: document.getElementById('jobTitle').value,
+                description: document.getElementById('jobDesc').value,
+                price: document.getElementById('jobPrice').value,
+                category: document.getElementById('jobCat').value,
+                authorId: currentUser.id,
+                authorName: currentUser.name
+            };
+
+            const res = await fetch('/publish', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(jobData)
+            });
+
+            const result = await res.json();
+            if(result.success){
+                alert("✅ Trabajo publicado exitosamente!");
+                showJobs();
+            }
+        }
+
+        // CARGAR Y MOSTRAR TODOS LOS TRABAJOS
+        async function loadJobs(){
+            const res = await fetch('/jobs');
+            const data = await res.json();
+            
+            if(data.success){
+                let html = '<h3>📋 Lista de Trabajos Disponibles</h3>';
+                data.jobs.forEach(job => {
+                    html += `
+                    <div style="background:rgba(255,255,255,0.1); padding:15px; margin:10px 0; border-radius:10px;">
+                        <h4>${job.title}</h4>
+                        <p>${job.description}</p>
+                        <p><strong>💲 Precio:</strong> $${job.price} | <strong>📁 Categoría:</strong> ${job.category}</p>
+                        <p><em>Publicado por: ${job.authorName}</em></p>
+                    </div>
+                    `;
+                });
+                document.getElementById('content').innerHTML = html;
+            }
+        }
+
+        function showJobs(){
+            loadJobs();
+        }
+
+        // ==================================
+        // 💎 SISTEMA DE NIVELES
+        // ==================================
+        function showUpgrade(){
+            document.getElementById('content').innerHTML = `
+                <h3>💎 Mejora tu Cuenta</h3>
+                <p>Selecciona el plan que más te convenga:</p>
+                <button onclick="upgradeUser(1)">💎 Pasar a PRO ($$$)</button>
+                <button onclick="upgradeUser(2)">👑 Pasar a PROMAX ($$$$)</button>
+            `;
+        }
+
+        async function upgradeUser(newLevel){
+            await fetch('/upgrade', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({userId: currentUser.id, level: newLevel})
+            });
+            currentUser.level = newLevel;
+            alert("✅ ¡Cuenta actualizada!");
+            showDashboard();
+        }
+
+        // ==================================
+        // 🚪 SALIR / CERRAR SESIÓN
+        // ==================================
+        function logout(){
+            currentUser = null;
+            document.getElementById('app').innerHTML = `<h2>👋 Sesión cerrada. Gracias por usar JHOP EXPRESS.</h2>`;
+            setTimeout(() => showLogin(), 2000);
+        }
+
+        // ==================================
+        // 🚀 INICIAR LA APLICACIÓN
+        // ==================================
+        window.onload = function(){
+            console.log("🎩 Plataforma JHOP EXPRESS cargada");
+            console.log("🔗 Disfraz activado: www.jhopexpress.com");
+            showLogin(); // Empieza mostrando el login
+        };
 
     </script>
-
 </body>
 </html>
