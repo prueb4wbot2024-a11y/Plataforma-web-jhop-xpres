@@ -43,3 +43,212 @@
             </div>
         </div>
     </nav>
+    <!-- PANTALLA DE LOGIN / REGISTRO -->
+    <div id="authScreen" class="flex-1 flex items-center justify-center p-4">
+        <div class="w-full max-w-md border border-neon/50 rounded-lg p-6 bg-black/80 glow">
+            <h2 class="text-3xl text-center mb-6 text-neon">ACCESO SISTEMA</h2>
+            
+            <div class="flex gap-2 mb-6">
+                <button onclick="selectType('empleado')" id="btnEmpleado" class="flex-1 py-2 border border-gray-600 rounded">👨‍💻 TRABAJADOR</button>
+                <button onclick="selectType('empleador')" id="btnEmpleador" class="flex-1 py-2 border border-gray-600 rounded">👔 EMPLEADOR</button>
+            </div>
+
+            <input type="text" id="username" placeholder="Usuario" class="w-full mb-3 p-3 bg-gray-900 border border-gray-700 rounded focus:border-neon outline-none">
+            <input type="email" id="email" placeholder="estigia920@gmail.com" class="w-full mb-3 p-3 bg-gray-900 border border-gray-700 rounded focus:border-neon outline-none">
+            <input type="password" id="password" placeholder="Contraseña" class="w-full mb-6 p-3 bg-gray-900 border border-gray-700 rounded focus:border-neon outline-none">
+
+            <button onclick="login()" class="w-full py-4 bg-neon text-dark font-bold text-xl rounded hover:bg-white transition-all glow">INGRESAR</button>
+            
+            <div class="mt-6 text-center">
+                <p class="text-gray-400 text-sm">METODOS DE PAGO:</p>
+                <p class="text-xs mt-1">💳 Dólares: <span class="text-yellow-400">Cuenta Pana</span></p>
+                <p class="text-xs">🇲🇽 Pesos: <span class="text-blue-400">Mercado Pago</span></p>
+            </div>
+        </div>
+    </div>
+    <!-- PANTALLA PRINCIPAL -->
+    <div id="mainScreen" class="hidden flex-1 flex">
+        
+        <!-- SIDEBAR FILTROS -->
+        <div id="filterPanel" class="w-64 border-r border-neon/30 bg-black/50 p-4 hidden md:block">
+            <h3 class="text-neon mb-4">FILTROS</h3>
+            <select id="categoria" class="w-full bg-gray-900 border border-gray-700 p-2 rounded mb-2">
+                <option value="todos">Todas las categorías</option>
+                <option value="programacion">Programación</option>
+                <option value="diseno">Diseño</option>
+                <option value="ia">Inteligencia Artificial</option>
+                <option value="soporte">Soporte Técnico</option>
+            </select>
+            <input type="text" id="search" placeholder="Buscar..." class="w-full bg-gray-900 border border-gray-700 p-2 rounded">
+            <button onclick="aplicarFiltros()" class="w-full mt-3 py-2 bg-neon/20 border border-neon rounded text-sm">BUSCAR</button>
+        </div>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <div class="flex-1 p-4 overflow-y-auto">
+            
+            <!-- UPGRADE BANNER -->
+            <div id="upgradeBanner" class="mb-6 p-4 border-2 border-yellow-500 rounded-lg bg-yellow-500/10 text-center">
+                <h4 class="text-yellow-400 text-xl font-bold">¡MEJORA TU PLAN!</h4>
+                <p class="text-sm">Gratis: 2 trabajos | Pro: 10 trabajos | Pro Max: ILIMITADO + CHAT</p>
+                <div class="mt-3 flex gap-2 justify-center">
+                    <button onclick="pagarPro()" class="px-4 py-2 bg-blue-600 rounded text-sm">PRO ($5)</button>
+                    <button onclick="pagarPromax()" class="px-4 py-2 bg-yellow-600 rounded glow2">PRO MAX ($10)</button>
+                </div>
+            </div>
+
+            <!-- LISTADO DE TRABAJOS -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="jobsContainer">
+                <!-- Los trabajos se cargan aquí con JS -->
+            </div>
+
+        </div>
+        <!-- PANEL LATERAL DERECHA - CHAT -->
+        <div id="chatPanel" class="w-80 border-l border-neon/30 bg-black/50 p-4 hidden">
+            <h3 class="text-neon2 mb-4">💬 CHAT DIRECTO</h3>
+            <div id="chatMessages" class="h-[70vh] bg-gray-900/50 rounded p-3 mb-3 overflow-y-auto border border-gray-800">
+                <p class="text-gray-500 text-sm text-center">Selecciona un trabajo para chatear</p>
+            </div>
+            <div class="flex gap-2">
+                <input type="text" id="chatInput" placeholder="Escribe mensaje..." class="flex-1 bg-gray-900 border border-gray-700 p-2 rounded">
+                <button onclick="enviarMensaje()" class="px-3 bg-neon text-dark rounded">ENVIAR</button>
+            </div>
+        </div>
+
+    </div>
+    <script>
+        // ESTADO DEL SISTEMA
+        let userType = null;
+        let userLevel = 0; // 0=Gratis, 1=Pro, 2=ProMax
+        const NIVELES = ['GRATIS', 'PRO', 'PRO MAX'];
+        const LIMITES = [2, 10, 9999];
+
+        // BASE DE DATOS DE EJEMPLO
+        const JOBS_DB = [
+            { id: 1, titulo: "Programación Web Completa", categoria: "programacion", precio: "$500", descripcion: "Necesito sitio web tipo red social con panel admin.", tipo: "real" },
+            { id: 2, titulo: "Experto en Inteligencia Artificial", categoria: "ia", precio: "$1200", descripcion: "Busco quien desarrolle modelo de predicción de datos.", tipo: "real" },
+            { id: 3, titulo: "Diseño de Logos y Marca", categoria: "diseno", precio: "$200", descripcion: "Identidad visual para nueva empresa de tecnología.", tipo: "real" },
+            { id: 4, titulo: "Soporte Técnico y Redes", categoria: "soporte", precio: "$150/hr", descripcion: "Mantenimiento preventivo y correctivo de equipos.", tipo: "real" },
+            { id: 5, titulo: "App Movil Flutter", categoria: "programacion", precio: "$800", descripcion: "Aplicación de servicios con geolocalización.", tipo: "real" },
+            { id: 6, titulo: "Automatización de Procesos", categoria: "programacion", precio: "$350", descripcion: "Scripts para automatizar tareas repetitivas.", tipo: "real" },
+            { id: 7, titulo: "Edición de Video Profesional", categoria: "diseno", precio: "$300", descripcion: "Edición y efectos para contenido redes sociales.", tipo: "real" },
+            { id: 8, titulo: "Consultor SEO y Marketing", categoria: "otros", precio: "$400", descripcion: "Posicionamiento web y campañas publicitarias.", tipo: "real" },
+            { id: 9, titulo: "Desarrollo Base de Datos", categoria: "programacion", precio: "$450", descripcion: "Diseño y optimización de bases de datos SQL/NoSQL.", tipo: "real" },
+            { id: 10, titulo: "Creación de Bots y Automatización", categoria: "ia", precio: "$600", descripcion: "Bots para WhatsApp, Telegram o Discord.", tipo: "real" }
+        ];
+
+        // FUNCIÓN DE SELECCIÓN DE TIPO DE USUARIO
+        function selectType(type) {
+            userType = type;
+            document.getElementById('btnEmpleado').classList.remove('border-neon', 'bg-neon/20');
+            document.getElementById('btnEmpleador').classList.remove('border-neon', 'bg-neon/20');
+            if(type === 'empleado') {
+                document.getElementById('btnEmpleado').classList.add('border-neon', 'bg-neon/20');
+            } else {
+                document.getElementById('btnEmpleador').classList.add('border-neon', 'bg-neon/20');
+            }
+        }
+
+        // FUNCIÓN DE LOGIN
+        function login() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            if(user && pass && userType) {
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('mainScreen').classList.remove('hidden');
+                cargarTrabajos();
+                actualizarPermisos();
+            } else {
+                alert('Completa todos los datos y selecciona tu tipo');
+            }
+        }
+
+        // ACTUALIZA LA INTERFAZ SEGÚN NIVEL
+        function actualizarPermisos() {
+            document.getElementById('userLevel').textContent = NIVELES[userLevel];
+            
+            // Filtros visibles solo para Pro y Pro Max
+            if(userLevel >= 1) {
+                 document.getElementById('filterPanel').classList.remove('hidden');
+            } else {
+                document.getElementById('filterPanel').classList.add('hidden');
+            }
+
+            // Chat solo para Pro Max
+            if(userLevel >= 2) {
+                document.getElementById('chatPanel').classList.remove('hidden');
+            } else {
+                document.getElementById('chatPanel').classList.add('hidden');
+            }
+        }
+
+        // CARGA DE TRABAJOS CON LÍMITE
+        function cargarTrabajos() {
+            const container = document.getElementById('jobsContainer');
+            container.innerHTML = "";
+            let limite = LIMITES[userLevel];
+            let trabajosAMostrar = JOBS_DB.slice(0, limite);
+
+            trabajosAMostrar.forEach(job => {
+                const card = document.createElement('div');
+                card.className = "border border-gray-700 rounded-lg p-4 bg-black/50 hover:border-neon transition-all";
+                card.innerHTML = `
+                    <h4 class="text-lg font-bold text-neon mb-1">${job.titulo}</h4>
+                    <span class="text-xs bg-gray-800 px-2 py-1 rounded">${job.categoria}</span>
+                    <p class="text-sm my-2 text-gray-300">${job.descripcion}</p>
+                    <div class="flex justify-between items-center mt-3">
+                        <span class="text-green-400 font-bold">${job.precio}</span>
+                        ${userLevel >= 2 ? `<button onclick="abrirChat(${job.id})" class="text-xs bg-neon/20 border border-neon px-2 py-1 rounded">💬 CHAT</button>` : `<button onclick="verContacto()" class="text-xs bg-gray-700 px-2 py-1 rounded">VER MÁS</button>`}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // FILTROS
+        function aplicarFiltros() {
+            alert('Filtros aplicados según tu búsqueda');
+            cargarTrabajos();
+        }
+
+        // FUNCIONES DE PAGO
+        function pagarPro() {
+            alert("Para activar PRO ($5 USD) realiza el pago a:\n\n💳 Dólares: Cuenta Pana\n🇲🇽 Pesos: Mercado Pago\n\nY envíanos el comprobante.");
+        }
+
+        function pagarPromax() {
+            alert("Para activar PRO MAX ($10 USD) realiza el pago a:\n\n💳 Dólares: Cuenta Pana\n🇲🇽 Pesos: Mercado Pago\n\nAcceso ILIMITADO y SIN ANUNCIOS.");
+        }
+
+        // CHAT
+        function abrirChat(id) {
+            document.getElementById('chatMessages').innerHTML = `<p class="text-center text-neon">Conectando con empleador del trabajo #${id}...</p>`;
+        }
+
+        function enviarMensaje() {
+            const input = document.getElementById('chatInput');
+            if(input.value) {
+                const msg = document.createElement('p');
+                msg.className = "bg-neon/20 p-2 rounded my-1 text-right";
+                msg.textContent = input.value;
+                document.getElementById('chatMessages').appendChild(msg);
+                input.value = "";
+            }
+        }
+
+        function verContacto() {
+            alert("Mejora a PRO MAX para ver el contacto directo y chatear.");
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        // INICIO
+        window.onload = () => {
+            cargarTrabajos();
+        }
+
+    </script>
+
+</body>
+</html>
