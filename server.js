@@ -4,59 +4,63 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
+const path = require('');
 
 const app = express();
 
 // ------------------------------
-// 🎭 CONFIGURACIÓN DEL DISFRAZ
+// 🎭 CONFIGURACIÓN
 // ------------------------------
-// Aquí le ponemos la identidad que TÚ quieras que se vea
 const BRAND_NAME = "JHOP EXPRESS";
 const VIRTUAL_URL = "www.jhopexpress.com";
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '/')));
+app.use(express.static(__dirname)); // Servir archivos estáticos (CSS, JS, Img)
 
-// Cabeceras para que se vea profesional y seguro
+// Cabeceras personalizadas
 app.use((req, res, next) => {
     res.setHeader('X-Powered-By', BRAND_NAME);
     res.setHeader('Server', 'JHOP System');
-    console.log(`🔗 Acceso detectado | Mostrando como: ${VIRTUAL_URL}`);
+    console.log(`🔗 Acceso: ${req.method} | ${req.url}`);
     next();
 });
 
 // ------------------------------
 // 🗄️ CONEXIÓN A MONGODB
 // ------------------------------
-mongoose.connect('mongodb+srv://estigia920_db_user:bonito12.3@cluster0.mx949hv.mongodb.net/?appName=Cluster0', {
+const mongoURI = 'mongodb+srv://estigia920_db_user:bonito12.3@cluster0.mx949hv.mongodb.net/?appName=Cluster0';
+
+mongoose.connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log("✅ Base de Datos JHOP conectada"))
   .catch(err => console.log("❌ Error DB:", err));
 
-// Ruta principal
+// ------------------------------
+// 📄 RUTA PRINCIPAL (TU HTML)
+// ------------------------------
 app.get('/', (req, res) => {
+    // Manda el archivo que ya hiciste
     res.sendFile(path.join(__dirname, 'index.html'));
 });
+
 // ==================================
-// 🧠 MODELOS DE LA BASE DE DATOS
+// 🧠 MODELOS
 // ==================================
 
-// 📋 ESTRUCTURA DE USUARIOS
+// Usuarios
 const userSchema = new mongoose.Schema({
     username: String,
     email: String,
     password: String,
-    level: { type: Number, default: 0 }, // 0=Gratis, 1=Pro, 2=ProMax
-    type: String // empleado o empleador
+    level: { type: Number, default: 0 },
+    type: String
 });
-
 const User = mongoose.model('User', userSchema);
 
-// 📋 ESTRUCTURA DE TRABAJOS
+// Trabajos
 const jobSchema = new mongoose.Schema({
     title: String,
     description: String,
@@ -66,42 +70,29 @@ const jobSchema = new mongoose.Schema({
     authorName: String,
     date: { type: Date, default: Date.now }
 });
-
 const Job = mongoose.model('Job', jobSchema);
 
 // ==================================
-// ⚙️ FUNCIONES DEL SISTEMA
+// ⚙️ FUNCIONES
 // ==================================
 
-// 📥 REGISTRO DE NUEVOS USUARIOS
+// Registro
 app.post('/register', async (req, res) => {
     try {
         const { username, email, password, type } = req.body;
-        
-        // Verificar si ya existe
         const existe = await User.findOne({ email });
-        if(existe) {
-            return res.json({ success: false, msg: "Usuario ya registrado" });
-        }
+        
+        if(existe) return res.json({ success: false, msg: "Usuario ya registrado" });
 
-        // Crear nuevo usuario
-        const user = new User({
-            username,
-            email,
-            password,
-            type,
-            level: 0 // Empieza en Gratis
-        });
-
+        const user = new User({ username, email, password, type });
         await user.save();
-        res.json({ success: true, user: user });
-
+        res.json({ success: true, user });
     } catch(err) {
         res.status(500).json({ success: false, error: err });
     }
 });
 
-// 🔑 INICIO DE SESIÓN
+// Login
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -110,60 +101,40 @@ app.post('/login', async (req, res) => {
         if(user) {
             res.json({ 
                 success: true, 
-                user: {
-                    id: user._id,
-                    name: user.username,
-                    level: user.level,
-                    type: user.type
-                }
+                user: { id: user._id, name: user.username, level: user.level, type: user.type }
             });
         } else {
             res.json({ success: false, msg: "Datos incorrectos" });
         }
-
     } catch(err) {
         res.status(500).json({ success: false, error: err });
     }
 });
-// ==================================
-// ⬆️ SISTEMA DE NIVELES Y PAGOS
-// ==================================
 
-// ACTUALIZAR CUENTA (Gratis -> Pro -> ProMax)
+// Upgrade cuenta
 app.post('/upgrade', async (req, res) => {
     try {
         const { userId, newLevel } = req.body;
-        
-        // 0 = Gratis | 1 = Pro | 2 = ProMax
         await User.findByIdAndUpdate(userId, { level: newLevel });
-        
-        console.log(`💎 Usuario actualizado a Nivel: ${newLevel}`);
-        res.json({ success: true, msg: "¡Cuenta actualizada exitosamente!" });
-
+        res.json({ success: true, msg: "Cuenta actualizada" });
     } catch(err) {
         res.status(500).json({ success: false, error: err });
     }
 });
 
-// ==================================
-// 💼 SISTEMA DE TRABAJOS
-// ==================================
-
-// PUBLICAR NUEVO TRABAJO
+// Publicar y Cargar Trabajos
 app.post('/publish', async (req, res) => {
     try {
         const job = new Job(req.body);
         await job.save();
-        res.json({ success: true, job: job });
+        res.json({ success: true, job });
     } catch(err) {
         res.status(500).json({ success: false, error: err });
     }
 });
 
-// CARGAR TODOS LOS TRABAJOS
 app.get('/jobs', async (req, res) => {
     try {
-        // Busca todos y los ordena del más nuevo al más viejo
         const trabajos = await Job.find().sort({ date: -1 });
         res.json({ success: true, jobs: trabajos });
     } catch(err) {
@@ -172,7 +143,7 @@ app.get('/jobs', async (req, res) => {
 });
 
 // ==================================
-// 🚀 INICIAR EL MOTOR
+// 🚀 INICIAR SERVIDOR
 // ==================================
 const PORT = process.env.PORT || 3000;
 
@@ -181,6 +152,7 @@ app.listen(PORT, () => {
     console.log(`🎩 PLATAFORMA: ${VIRTUAL_URL}`);
     console.log(`🏢 SISTEMA: ${BRAND_NAME}`);
     console.log(`🔌 PUERTO: ${PORT}`);
-    console.log("✅ SISTEMA ACTIVO Y FUNCIONANDO");
+    console.log("✅ SISTEMA ACTIVO");
+    console.log("📢 ADSENSE ACTIVO");
     console.log("==================================");
 });
