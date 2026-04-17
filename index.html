@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YAP EXPRESS - Trabajos Rápidos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        neon: '#00f3ff',
+                        neon2: '#ff00c8',
+                        dark: '#0a0a16',
+                    },
+                    fontFamily: {
+                        cyber: ['Orbitron', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .glow { box-shadow: 0 0 10px theme('colors.neon'), 0 0 20px theme('colors.neon'); }
+            .glow2 { box-shadow: 0 0 10px theme('colors.neon2'), 0 0 20px theme('colors.neon2'); }
+            .text-glow { text-shadow: 0 0 5px currentColor; }
+        }
+    </style>
+</head>
+<body class="bg-dark text-white font-cyber min-h-screen flex flex-col">
+
+    <!-- NAVBAR -->
+    <nav class="border-b border-neon/30 bg-black/70 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl md:text-4xl font-black text-neon text-glow">YAP EXPRESS</h1>
+            <div class="flex gap-3 items-center">
+                <span id="userLevel" class="px-3 py-1 border border-gray-500 rounded text-sm">GRATIS</span>
+                <button onclick="logout()" class="text-xs border border-red-500 px-2 py-1 hover:bg-red-500/20">SALIR</button>
+            </div>
+        </div>
+    </nav>
