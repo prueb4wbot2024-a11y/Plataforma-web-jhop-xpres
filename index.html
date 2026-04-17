@@ -2,351 +2,812 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <meta name="description" content="JHOP EXPRESS — Conectamos talento con oportunidades en Mérida, Yucatán y México.">
-    <meta name="theme-color" content="#0a0a0a">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JHOP EXPRESS — Plataforma Freelance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 
-    <!-- Open Graph -->
-    <meta property="og:title"       content="JHOP EXPRESS">
-    <meta property="og:description" content="Plataforma de empleo rápido y directo.">
-    <meta property="og:type"        content="website">
-    <meta property="og:url"         content="https://www.jhopexpress.com">
-
-    <title>JHOP EXPRESS — Empleo Rápido</title>
+    <!-- GOOGLE ADSENSE -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6606043599842670" crossorigin="anonymous"></script>
 
     <style>
-        /* ─── RESET ─── */
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* =====================
+           VARIABLES & RESET
+        ===================== */
+        :root {
+            --bg:        #0a0a0f;
+            --surface:   #12121a;
+            --border:    #1e1e2e;
+            --accent:    #f5c518;
+            --accent2:   #ff4e50;
+            --text:      #e8e8f0;
+            --muted:     #6b6b80;
+            --success:   #00e676;
+            --radius:    6px;
+            --font-mono: 'Space Mono', monospace;
+            --font-main: 'Syne', sans-serif;
         }
 
-        html, body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            background: #0a0a0a;
-            font-family: 'Courier New', Courier, monospace;
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* ─── IFRAME APP ─── */
-        #app-frame {
-            position: fixed;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-
-        /* ─── SPLASH SCREEN ─── */
-        #splash {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
+        /* =====================
+           HEADER
+        ===================== */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            gap: 28px;
-            background: #0a0a0a;
-            overflow: hidden;
-
-            /* Fade out con clase .ocultar */
-            opacity: 1;
-            transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+            justify-content: space-between;
+            padding: 0 2rem;
+            height: 64px;
+            background: rgba(10,10,15,0.92);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
         }
 
-        #splash.ocultar {
-            opacity: 0;
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .logo span { color: var(--text); }
+
+        nav { display: flex; gap: 0.5rem; }
+
+        .btn {
+            padding: 0.45rem 1.1rem;
+            border-radius: var(--radius);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--muted);
+        }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+
+        .btn-danger {
+            background: var(--accent2);
+            color: #fff;
+            border-color: var(--accent2);
+        }
+        .btn-danger:hover { opacity: 0.85; }
+
+        .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.7rem; }
+
+        /* User info en header */
+        #user-info {
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-level { background: var(--border); color: var(--accent); }
+        .badge-type  { background: rgba(245,197,24,0.12); color: var(--accent); border: 1px solid rgba(245,197,24,0.3); }
+
+        /* =====================
+           HERO
+        ===================== */
+        .hero {
+            padding: 5rem 2rem 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(245,197,24,0.07) 0%, transparent 70%);
             pointer-events: none;
         }
 
-        /* Fondo con líneas de velocidad */
-        #splash::before {
-            content: '';
-            position: absolute;
-            inset: -50%;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 120px,
-                rgba(255, 165, 0, 0.03) 120px,
-                rgba(255, 165, 0, 0.03) 121px
-            );
-            animation: mover-lineas 1.2s linear infinite;
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
         }
 
-        @keyframes mover-lineas {
-            0%   { transform: translateX(0); }
-            100% { transform: translateX(121px); }
+        .hero h1 em {
+            font-style: normal;
+            color: var(--accent);
         }
 
-        /* ─── LOGO ─── */
-        .splash-logo {
-            position: relative;
+        .hero p {
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 480px;
+            margin: 0 auto 2rem;
+        }
+
+        /* =====================
+           TABS / SECCIONES
+        ===================== */
+        .tabs {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
         }
 
-        .splash-icono {
-            width: 72px;
-            height: 72px;
-            animation: pulso 1.6s ease-in-out infinite;
-        }
-
-        @keyframes pulso {
-            0%, 100% { transform: scale(1);    opacity: 1; }
-            50%       { transform: scale(1.08); opacity: 0.85; }
-        }
-
-        .splash-nombre {
-            font-size: clamp(2.2rem, 8vw, 4rem);
-            font-weight: 900;
-            letter-spacing: 0.12em;
-            color: #fff;
-            text-transform: uppercase;
-
-            /* Efecto gradiente naranja–blanco */
-            background: linear-gradient(90deg, #ff8c00 0%, #ffd700 40%, #fff 70%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-
-            animation: texto-entrada 0.6s ease both;
-        }
-
-        @keyframes texto-entrada {
-            from { transform: translateY(18px); opacity: 0; }
-            to   { transform: translateY(0);    opacity: 1; }
-        }
-
-        .splash-tagline {
-            font-size: clamp(0.65rem, 2.5vw, 0.85rem);
-            letter-spacing: 0.35em;
-            color: rgba(255, 165, 0, 0.7);
-            text-transform: uppercase;
-            animation: texto-entrada 0.6s 0.15s ease both;
-        }
-
-        /* ─── BARRA DE CARGA ─── */
-        .barra-contenedor {
-            width: min(320px, 80vw);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            animation: texto-entrada 0.6s 0.25s ease both;
-        }
-
-        .barra-track {
-            width: 100%;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .barra-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #ff8c00, #ffd700);
-            border-radius: 2px;
-            box-shadow: 0 0 12px rgba(255, 165, 0, 0.6);
-            transition: width 0.08s linear;
-        }
-
-        .barra-label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.65rem;
-            letter-spacing: 0.2em;
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .barra-pct {
-            color: rgba(255, 165, 0, 0.8);
+        .tab {
+            padding: 0.85rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
             font-weight: 700;
-        }
-
-        /* ─── URL BADGE ─── */
-        .splash-url {
-            position: absolute;
-            bottom: 28px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.7rem;
-            letter-spacing: 0.15em;
-            color: rgba(255, 255, 255, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
             white-space: nowrap;
-            animation: texto-entrada 0.6s 0.4s ease both;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: var(--text); }
+        .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .section { display: none; padding: 0 2rem 4rem; max-width: 900px; margin: 0 auto; }
+        .section.active { display: block; }
+
+        /* =====================
+           FORMULARIOS
+        ===================== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
         }
 
-        .splash-url span {
-            color: rgba(255, 165, 0, 0.5);
+        .card h2 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.01em;
         }
 
-        /* ─── PUNTOS DE ESTADO ─── */
-        .estado-dots {
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-grid.single { grid-template-columns: 1fr; }
+
+        .field { display: flex; flex-direction: column; gap: 0.4rem; }
+        .field.span2 { grid-column: span 2; }
+
+        label {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+        }
+
+        input, select, textarea {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            padding: 0.65rem 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--accent);
+        }
+
+        select option { background: var(--surface); }
+        textarea { resize: vertical; min-height: 90px; }
+
+        .form-footer {
+            margin-top: 1.25rem;
             display: flex;
-            gap: 6px;
-            margin-top: 4px;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        .estado-dots span {
-            width: 5px;
-            height: 5px;
+        /* =====================
+           MENSAJES
+        ===================== */
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .alert.show { display: block; }
+        .alert-ok  { background: rgba(0,230,118,0.1); border: 1px solid rgba(0,230,118,0.3); color: var(--success); }
+        .alert-err { background: rgba(255,78,80,0.1); border: 1px solid rgba(255,78,80,0.3); color: var(--accent2); }
+
+        /* =====================
+           LISTADO DE TRABAJOS
+        ===================== */
+        .jobs-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .jobs-header h2 { font-size: 1.1rem; font-weight: 800; }
+
+        .filter-row { display: flex; gap: 0.5rem; }
+
+        .job-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .job-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            transition: border-color 0.2s, transform 0.2s;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+        .job-card:hover {
+            border-color: rgba(245,197,24,0.4);
+            transform: translateY(-2px);
+        }
+
+        .job-cat {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+        }
+
+        .job-title {
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .job-desc {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.5;
+            flex: 1;
+        }
+
+        .job-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .job-price {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .job-author {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        .job-date {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--border);
+        }
+
+        /* =====================
+           EMPTY STATE
+        ===================== */
+        .empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--muted);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        .empty span { font-size: 2rem; display: block; margin-bottom: 1rem; }
+
+        /* =====================
+           LOADER
+        ===================== */
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
             border-radius: 50%;
-            background: rgba(255, 165, 0, 0.3);
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 0.4rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* =====================
+           ADSENSE SLOT
+        ===================== */
+        .ad-slot {
+            margin: 2rem 0;
+            text-align: center;
+            min-height: 90px;
+            background: rgba(255,255,255,0.02);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .estado-dots span.activo {
-            background: #ffa500;
-            box-shadow: 0 0 6px rgba(255, 165, 0, 0.8);
-            animation: parpadeo 0.5s ease infinite alternate;
+        /* =====================
+           RESPONSIVE
+        ===================== */
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .field.span2 { grid-column: span 1; }
+            .hero h1 { font-size: 2.2rem; }
+            nav .btn { display: none; }
         }
-
-        @keyframes parpadeo {
-            from { opacity: 0.5; }
-            to   { opacity: 1; }
-        }
-
     </style>
 </head>
 <body>
 
-    <!-- APP PRINCIPAL (iframe) -->
-    <iframe
-        id="app-frame"
-        src="https://plataforma-web-jhop-xpres.onrender.com"
-        title="JHOP EXPRESS — Plataforma de empleo"
-        loading="eager"
-        allow="geolocation; camera; microphone"
-    ></iframe>
+<!-- ========================
+     HEADER
+======================== -->
+<header>
+    <div class="logo">JHOP<span> EXPRESS</span></div>
 
-    <!-- SPLASH SCREEN -->
-    <div id="splash" role="status" aria-label="Cargando JHOP EXPRESS">
+    <div id="user-info">
+        <span id="user-name">—</span>
+        <span class="badge badge-level" id="user-level">LVL 0</span>
+        <span class="badge badge-type" id="user-type">—</span>
+        <button class="btn btn-ghost btn-sm" onclick="logout()">Salir</button>
+    </div>
 
-        <!-- Logo + nombre -->
-        <div class="splash-logo">
+    <nav id="auth-nav">
+        <button class="btn btn-ghost" onclick="showSection('login')">Ingresar</button>
+        <button class="btn btn-primary" onclick="showSection('register')">Registrarse</button>
+    </nav>
+</header>
 
-            <!-- SVG icono: rayo + flecha express -->
-            <svg class="splash-icono" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <defs>
-                    <linearGradient id="g1" x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse">
-                        <stop offset="0%"   stop-color="#ff8c00"/>
-                        <stop offset="100%" stop-color="#ffd700"/>
-                    </linearGradient>
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="2.5" result="blur"/>
-                        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                    </filter>
-                </defs>
-                <!-- Hexágono fondo -->
-                <polygon points="36,4 64,20 64,52 36,68 8,52 8,20"
-                    fill="rgba(255,140,0,0.08)" stroke="url(#g1)" stroke-width="1.5"/>
-                <!-- Rayo -->
-                <path d="M42 10 L28 36 H38 L30 62 L52 30 H40 Z"
-                    fill="url(#g1)" filter="url(#glow)"/>
-            </svg>
+<!-- ========================
+     HERO
+======================== -->
+<section class="hero" id="hero">
+    <h1>Conecta tu trabajo<br>con <em>oportunidades reales.</em></h1>
+    <p>Publica servicios, encuentra freelancers y crece en la plataforma independiente más directa.</p>
+    <button class="btn btn-primary" onclick="showSection('jobs')">Ver trabajos disponibles →</button>
+</section>
 
-            <div class="splash-nombre">JHOP EXPRESS</div>
-            <div class="splash-tagline">Empleo rápido · Mérida · México</div>
-        </div>
+<!-- ========================
+     TABS
+======================== -->
+<div class="tabs" id="main-tabs">
+    <div class="tab active" onclick="showSection('jobs')">Trabajos</div>
+    <div class="tab" id="tab-publish" onclick="requireLogin('publish')" style="display:none">Publicar</div>
+    <div class="tab" onclick="showSection('register')">Registro</div>
+    <div class="tab" onclick="showSection('login')">Login</div>
+</div>
 
-        <!-- Barra de progreso -->
-        <div class="barra-contenedor">
-            <div class="barra-track">
-                <div class="barra-fill" id="barra-fill"></div>
-            </div>
-            <div class="barra-label">
-                <span>INICIANDO SISTEMA</span>
-                <span class="barra-pct" id="barra-pct">0%</span>
-            </div>
-            <div class="estado-dots">
-                <span id="dot1"></span>
-                <span id="dot2"></span>
-                <span id="dot3"></span>
-            </div>
-        </div>
-
-        <!-- URL en footer del splash -->
-        <div class="splash-url">
-            <span>www.</span>JHOPEXPRESS<span>.com</span>
+<!-- ========================
+     SECCIÓN: TRABAJOS
+======================== -->
+<div class="section active" id="sec-jobs">
+    <div class="jobs-header">
+        <h2>Trabajos Activos</h2>
+        <div class="filter-row">
+            <select id="filter-cat" onchange="loadJobs()" style="width:auto">
+                <option value="">Todas las categorías</option>
+                <option value="diseño">Diseño</option>
+                <option value="desarrollo">Desarrollo</option>
+                <option value="marketing">Marketing</option>
+                <option value="redaccion">Redacción</option>
+                <option value="video">Video/Audio</option>
+                <option value="otro">Otro</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="loadJobs()">↻ Actualizar</button>
         </div>
     </div>
 
-    <!-- AdSense (async — no bloquea) -->
-    <script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6606043599842670"
-        crossorigin="anonymous"
-    ></script>
+    <!-- AdSense Banner -->
+    <div class="ad-slot">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-6606043599842670"
+             data-ad-slot="auto"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+    </div>
 
-    <script>
-        (function () {
-            'use strict';
+    <div id="jobs-list" class="job-grid"></div>
+</div>
 
-            const splash   = document.getElementById('splash');
-            const barraFill= document.getElementById('barra-fill');
-            const barraPct = document.getElementById('barra-pct');
-            const dots     = [
-                document.getElementById('dot1'),
-                document.getElementById('dot2'),
-                document.getElementById('dot3')
-            ];
+<!-- ========================
+     SECCIÓN: PUBLICAR
+======================== -->
+<div class="section" id="sec-publish">
+    <div class="card">
+        <h2>📌 Publicar un trabajo</h2>
+        <div class="form-grid">
+            <div class="field span2">
+                <label>Título del trabajo</label>
+                <input type="text" id="job-title" placeholder="Ej: Necesito logo para mi marca">
+            </div>
+            <div class="field span2">
+                <label>Descripción</label>
+                <textarea id="job-desc" placeholder="Detalla qué necesitas, plazos, requerimientos..."></textarea>
+            </div>
+            <div class="field">
+                <label>Presupuesto (MXN)</label>
+                <input type="number" id="job-price" placeholder="500" min="0">
+            </div>
+            <div class="field">
+                <label>Categoría</label>
+                <select id="job-cat">
+                    <option value="">— Selecciona —</option>
+                    <option value="diseño">Diseño</option>
+                    <option value="desarrollo">Desarrollo</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="redaccion">Redacción</option>
+                    <option value="video">Video/Audio</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-footer">
+            <button class="btn btn-primary" onclick="publishJob()">Publicar trabajo</button>
+        </div>
+        <div class="alert" id="publish-msg"></div>
+    </div>
+</div>
 
-            // ── Animar barra de progreso ──
-            const DURACION_MS  = 2200;   // duración total del splash
-            const INTERVALO_MS = 40;     // fps de la barra
+<!-- ========================
+     SECCIÓN: REGISTRO
+======================== -->
+<div class="section" id="sec-register">
+    <div class="card" style="max-width:480px;margin:0 auto">
+        <h2>🎩 Crear cuenta</h2>
+        <div class="form-grid single">
+            <div class="field">
+                <label>Nombre de usuario</label>
+                <input type="text" id="reg-user" placeholder="Tu nombre">
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="reg-email" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="field">
+                <label>Contraseña</label>
+                <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres">
+            </div>
+            <div class="field">
+                <label>Tipo de cuenta</label>
+                <select id="reg-type">
+                    <option value="cliente">Cliente — Necesito contratar</option>
+                    <option value="freelancer">Freelancer — Ofrezco servicios</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-footer">
+            <button class="btn btn-primary" onclick="register()">Crear cuenta</button>
+            <span style="font-size:0.8rem;color:var(--muted)">¿Ya tienes cuenta? <a href="#" onclick="showSection('login')" style="color:var(--accent)">Inicia sesión</a></span>
+        </div>
+        <div class="alert" id="reg-msg"></div>
+    </div>
+</div>
 
-            let progreso   = 0;
-            let dotActual  = 0;
-            const pasos    = DURACION_MS / INTERVALO_MS;
-            const incremento = 100 / pasos;
+<!-- ========================
+     SECCIÓN: LOGIN
+======================== -->
+<div class="section" id="sec-login">
+    <div class="card" style="max-width:400px;margin:0 auto">
+        <h2>🔑 Iniciar sesión</h2>
+        <div class="form-grid single">
+            <div class="field">
+                <label>Email</label>
+                <input type="email" id="login-email" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="field">
+                <label>Contraseña</label>
+                <input type="password" id="login-pass" placeholder="••••••••">
+            </div>
+        </div>
+        <div class="form-footer">
+            <button class="btn btn-primary" onclick="login()">Entrar</button>
+            <span style="font-size:0.8rem;color:var(--muted)">¿Sin cuenta? <a href="#" onclick="showSection('register')" style="color:var(--accent)">Regístrate</a></span>
+        </div>
+        <div class="alert" id="login-msg"></div>
+    </div>
+</div>
 
-            function activarDot(i) {
-                dots.forEach((d, idx) => {
-                    d.classList.toggle('activo', idx === i);
-                });
+<!-- ========================
+     JAVASCRIPT
+======================== -->
+<script>
+    // ---- Estado global ----
+    let currentUser = JSON.parse(localStorage.getItem('jhop_user') || 'null');
+    const API = '';  // Vacío = mismo origen (relativo)
+
+    // ---- Init ----
+    document.addEventListener('DOMContentLoaded', () => {
+        updateUI();
+        loadJobs();
+        // Activar AdSense
+        try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+    });
+
+    // ---- Navegación ----
+    function showSection(name) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('sec-' + name).classList.add('active');
+
+        const tabMap = { jobs: 0, publish: 1, register: 2, login: 3 };
+        const tabs = document.querySelectorAll('.tab');
+        if (tabMap[name] !== undefined) tabs[tabMap[name]]?.classList.add('active');
+    }
+
+    function requireLogin(section) {
+        if (!currentUser) { showSection('login'); return; }
+        showSection(section);
+    }
+
+    function updateUI() {
+        const info  = document.getElementById('user-info');
+        const nav   = document.getElementById('auth-nav');
+        const tabPub = document.getElementById('tab-publish');
+
+        if (currentUser) {
+            info.style.display = 'flex';
+            nav.style.display  = 'none';
+            tabPub.style.display = 'block';
+            document.getElementById('user-name').textContent  = currentUser.name;
+            document.getElementById('user-level').textContent = 'LVL ' + currentUser.level;
+            document.getElementById('user-type').textContent  = currentUser.type;
+        } else {
+            info.style.display = 'none';
+            nav.style.display  = 'flex';
+            tabPub.style.display = 'none';
+        }
+    }
+
+    function showMsg(id, msg, isOk) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className = 'alert show ' + (isOk ? 'alert-ok' : 'alert-err');
+        setTimeout(() => el.classList.remove('show'), 4000);
+    }
+
+    // ---- AUTH ----
+    async function register() {
+        const username = document.getElementById('reg-user').value.trim();
+        const email    = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-pass').value;
+        const type     = document.getElementById('reg-type').value;
+
+        if (!username || !email || !password)
+            return showMsg('reg-msg', 'Completa todos los campos', false);
+
+        if (password.length < 6)
+            return showMsg('reg-msg', 'Contraseña mínimo 6 caracteres', false);
+
+        try {
+            const res  = await fetch(API + '/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password, type })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                currentUser = data.user;
+                localStorage.setItem('jhop_user', JSON.stringify(currentUser));
+                updateUI();
+                showMsg('reg-msg', '✅ Cuenta creada. ¡Bienvenido!', true);
+                setTimeout(() => showSection('jobs'), 1500);
+            } else {
+                showMsg('reg-msg', data.msg || 'Error al registrar', false);
+            }
+        } catch (e) {
+            showMsg('reg-msg', 'No se pudo conectar al servidor', false);
+        }
+    }
+
+    async function login() {
+        const email    = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-pass').value;
+
+        if (!email || !password)
+            return showMsg('login-msg', 'Email y contraseña requeridos', false);
+
+        try {
+            const res  = await fetch(API + '/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                currentUser = data.user;
+                localStorage.setItem('jhop_user', JSON.stringify(currentUser));
+                updateUI();
+                showMsg('login-msg', '✅ Sesión iniciada', true);
+                setTimeout(() => showSection('jobs'), 1000);
+            } else {
+                showMsg('login-msg', data.msg || 'Credenciales incorrectas', false);
+            }
+        } catch (e) {
+            showMsg('login-msg', 'No se pudo conectar al servidor', false);
+        }
+    }
+
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('jhop_user');
+        updateUI();
+        showSection('jobs');
+    }
+
+    // ---- TRABAJOS ----
+    async function loadJobs() {
+        const list = document.getElementById('jobs-list');
+        const cat  = document.getElementById('filter-cat').value;
+        list.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--muted);font-family:var(--font-mono);font-size:0.8rem"><span class="loader"></span> Cargando...</div>`;
+
+        try {
+            const url  = API + '/jobs' + (cat ? '?category=' + cat : '');
+            const res  = await fetch(url);
+            const data = await res.json();
+
+            if (!data.success || data.jobs.length === 0) {
+                list.innerHTML = `<div class="empty" style="grid-column:1/-1"><span>🎩</span>No hay trabajos publicados aún.</div>`;
+                return;
             }
 
-            activarDot(0);
+            list.innerHTML = data.jobs.map(j => `
+                <div class="job-card">
+                    <div class="job-cat">${j.category}</div>
+                    <div class="job-title">${escHtml(j.title)}</div>
+                    <div class="job-desc">${escHtml(j.description)}</div>
+                    <div class="job-footer">
+                        <div>
+                            <div class="job-price">$${Number(j.price).toLocaleString('es-MX')} MXN</div>
+                            <div class="job-author">@${escHtml(j.authorName)}</div>
+                        </div>
+                        <div class="job-date">${formatDate(j.date)}</div>
+                    </div>
+                </div>
+            `).join('');
 
-            const timer = setInterval(() => {
-                progreso = Math.min(progreso + incremento, 100);
+        } catch (e) {
+            list.innerHTML = `<div class="empty" style="grid-column:1/-1"><span>⚠️</span>Error al cargar trabajos.</div>`;
+        }
+    }
 
-                barraFill.style.width = progreso + '%';
-                barraPct.textContent  = Math.floor(progreso) + '%';
+    async function publishJob() {
+        if (!currentUser) return showSection('login');
 
-                // Avanzar dot según progreso
-                if (progreso >= 33 && dotActual < 1) { dotActual = 1; activarDot(1); }
-                if (progreso >= 66 && dotActual < 2) { dotActual = 2; activarDot(2); }
+        const title       = document.getElementById('job-title').value.trim();
+        const description = document.getElementById('job-desc').value.trim();
+        const price       = parseFloat(document.getElementById('job-price').value);
+        const category    = document.getElementById('job-cat').value;
 
-                if (progreso >= 100) {
-                    clearInterval(timer);
-                    barraPct.textContent = '100%';
+        if (!title || !description || !price || !category)
+            return showMsg('publish-msg', 'Completa todos los campos', false);
 
-                    // Marcar todos los dots activos brevemente
-                    dots.forEach(d => d.classList.add('activo'));
+        try {
+            const res  = await fetch(API + '/publish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title, description, price, category,
+                    authorId:   currentUser.id,
+                    authorName: currentUser.name
+                })
+            });
+            const data = await res.json();
 
-                    // Fade out del splash
-                    setTimeout(() => {
-                        splash.classList.add('ocultar');
+            if (data.success) {
+                showMsg('publish-msg', '✅ Trabajo publicado correctamente', true);
+                document.getElementById('job-title').value = '';
+                document.getElementById('job-desc').value  = '';
+                document.getElementById('job-price').value = '';
+                document.getElementById('job-cat').value   = '';
+                setTimeout(() => { showSection('jobs'); loadJobs(); }, 1500);
+            } else {
+                showMsg('publish-msg', data.msg || 'Error al publicar', false);
+            }
+        } catch (e) {
+            showMsg('publish-msg', 'No se pudo conectar al servidor', false);
+        }
+    }
 
-                        // Remover del DOM después del fade
-                        splash.addEventListener('transitionend', () => {
-                            splash.remove();
-                        }, { once: true });
-                    }, 180);
-                }
-            }, INTERVALO_MS);
+    // ---- UTILS ----
+    function escHtml(str) {
+        return String(str)
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;');
+    }
 
-        })();
-    </script>
+    function formatDate(dateStr) {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' });
+    }
+</script>
 
 </body>
 </html>
