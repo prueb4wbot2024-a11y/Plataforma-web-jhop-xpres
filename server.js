@@ -32,7 +32,6 @@ app.use((req, res, next) => {
 // 🗄️ CONEXIÓN A MONGODB
 // ------------------------------
 mongoose.connect('mongodb+srv://estigia920_db_user:bonito12.3@cluster0.mx949hv.mongodb.net/?appName=Cluster0', {
-/?appName=Cluster0',{
     useNewUrlParser: true
     useUnifiedTopology: true
 }).then(() => console.log("✅ Base de Datos JHOP conectada"))
