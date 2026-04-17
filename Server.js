@@ -1,4 +1,6 @@
-// SERVER.JS - PARTE 1: CONFIGURACIÓN INICIAL
+// ==================================
+// SERVIDOR PRINCIPAL - JHOP EXPRESS
+// ==================================
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -6,25 +8,45 @@ const path = require('path');
 
 const app = express();
 
+// ------------------------------
+// 🎭 CONFIGURACIÓN DEL DISFRAZ
+// ------------------------------
+// Aquí le ponemos la identidad que TÚ quieras que se vea
+const BRAND_NAME = "JHOP EXPRESS";
+const VIRTUAL_URL = "www.jhopexpress.com";
+
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '/'))); // Esto sirve tu index.html
+app.use(express.static(path.join(__dirname, '/')));
 
-// Conexión a la Base de Datos
-mongoose.connect('mongodb+srv://tu_usuario:tu_password@cluster0.mongodb.net/yap_express', {
+// Cabeceras para que se vea profesional y seguro
+app.use((req, res, next) => {
+    res.setHeader('X-Powered-By', BRAND_NAME);
+    res.setHeader('Server', 'JHOP System');
+    console.log(`🔗 Acceso detectado | Mostrando como: ${VIRTUAL_URL}`);
+    next();
+});
+
+// ------------------------------
+// 🗄️ CONEXIÓN A MONGODB
+// ------------------------------
+// ⚠️ Recuerda poner aquí tu link real que te den en Atlas
+mongoose.connect('mongodb+srv://tu_usuario:tu_password@cluster0.mongodb.net/jhop_express', {
     useNewUrlParser: true,
     useUnifiedTopology: true
-}).then(() => console.log("✅ Conectado a MongoDB"))
+}).then(() => console.log("✅ Base de Datos JHOP conectada"))
   .catch(err => console.log("❌ Error DB:", err));
 
-// Ruta principal (Carga tu página)
+// Ruta principal
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-// ------------------------------
-// MODELO DE USUARIO (Estructura)
-// ------------------------------
+// ==================================
+// 🧠 MODELOS DE LA BASE DE DATOS
+// ==================================
+
+// 📋 ESTRUCTURA DE USUARIOS
 const userSchema = new mongoose.Schema({
     username: String,
     email: String,
@@ -35,23 +57,36 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// ------------------------------
-// RUTAS DE AUTENTICACIÓN
-// ------------------------------
+// 📋 ESTRUCTURA DE TRABAJOS
+const jobSchema = new mongoose.Schema({
+    title: String,
+    description: String,
+    price: Number,
+    category: String,
+    authorId: String,
+    authorName: String,
+    date: { type: Date, default: Date.now }
+});
 
-// REGISTRO DE NUEVO USUARIO
+const Job = mongoose.model('Job', jobSchema);
+
+// ==================================
+// ⚙️ FUNCIONES DEL SISTEMA
+// ==================================
+
+// 📥 REGISTRO DE NUEVOS USUARIOS
 app.post('/register', async (req, res) => {
     try {
         const { username, email, password, type } = req.body;
         
         // Verificar si ya existe
-        const existingUser = await User.findOne({ email });
-        if(existingUser) {
-            return res.json({ success: false, message: "Usuario ya existe" });
+        const existe = await User.findOne({ email });
+        if(existe) {
+            return res.json({ success: false, msg: "Usuario ya registrado" });
         }
 
         // Crear nuevo usuario
-        const newUser = new User({
+        const user = new User({
             username,
             email,
             password,
@@ -59,15 +94,15 @@ app.post('/register', async (req, res) => {
             level: 0 // Empieza en Gratis
         });
 
-        await newUser.save();
-        res.json({ success: true, user: newUser });
+        await user.save();
+        res.json({ success: true, user: user });
 
     } catch(err) {
         res.status(500).json({ success: false, error: err });
     }
 });
 
-// LOGIN
+// 🔑 INICIO DE SESIÓN
 app.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -84,69 +119,69 @@ app.post('/login', async (req, res) => {
                 }
             });
         } else {
-            res.json({ success: false, message: "Datos incorrectos" });
+            res.json({ success: false, msg: "Datos incorrectos" });
         }
 
     } catch(err) {
         res.status(500).json({ success: false, error: err });
     }
 });
+// ==================================
+// ⬆️ SISTEMA DE NIVELES Y PAGOS
+// ==================================
 
-// ACTUALIZAR NIVEL (Cuando pagan)
+// ACTUALIZAR CUENTA (Gratis -> Pro -> ProMax)
 app.post('/upgrade', async (req, res) => {
     try {
         const { userId, newLevel } = req.body;
+        
+        // 0 = Gratis | 1 = Pro | 2 = ProMax
         await User.findByIdAndUpdate(userId, { level: newLevel });
-        res.json({ success: true, message: "Nivel actualizado" });
+        
+        console.log(`💎 Usuario actualizado a Nivel: ${newLevel}`);
+        res.json({ success: true, msg: "¡Cuenta actualizada exitosamente!" });
+
     } catch(err) {
         res.status(500).json({ success: false, error: err });
     }
 });
-// ------------------------------
-// MODELO DE TRABAJOS
-// ------------------------------
-const jobSchema = new mongoose.Schema({
-    title: String,
-    description: String,
-    price: Number,
-    category: String,
-    authorId: String,
-    authorName: String,
-    date: { type: Date, default: Date.now }
-});
 
-const Job = mongoose.model('Job', jobSchema);
-
-// ------------------------------
-// RUTAS DE TRABAJOS
-// ------------------------------
+// ==================================
+// 💼 SISTEMA DE TRABAJOS
+// ==================================
 
 // PUBLICAR NUEVO TRABAJO
 app.post('/publish', async (req, res) => {
     try {
-        const { title, description, price, category, authorId, authorName } = req.body;
-        const newJob = new Job({ title, description, price, category, authorId, authorName });
-        await newJob.save();
-        res.json({ success: true, job: newJob });
+        const job = new Job(req.body);
+        await job.save();
+        res.json({ success: true, job: job });
     } catch(err) {
         res.status(500).json({ success: false, error: err });
     }
 });
 
-// OBTENER TODOS LOS TRABAJOS
+// CARGAR TODOS LOS TRABAJOS
 app.get('/jobs', async (req, res) => {
     try {
-        const jobs = await Job.find().sort({ date: -1 });
-        res.json({ success: true, jobs: jobs });
+        // Busca todos y los ordena del más nuevo al más viejo
+        const trabajos = await Job.find().sort({ date: -1 });
+        res.json({ success: true, jobs: trabajos });
     } catch(err) {
         res.status(500).json({ success: false, error: err });
     }
 });
 
-// ------------------------------
-// INICIAR SERVIDOR
-// ------------------------------
+// ==================================
+// 🚀 INICIAR EL MOTOR
+// ==================================
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor YAP EXPRESS corriendo en puerto ${PORT}`);
+    console.log("==================================");
+    console.log(`🎩 PLATAFORMA: ${VIRTUAL_URL}`);
+    console.log(`🏢 SISTEMA: ${BRAND_NAME}`);
+    console.log(`🔌 PUERTO: ${PORT}`);
+    console.log("✅ SISTEMA ACTIVO Y FUNCIONANDO");
+    console.log("==================================");
 });
